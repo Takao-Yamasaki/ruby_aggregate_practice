@@ -14,9 +14,7 @@ class KindUserAggregator
 
     @channel_names.each do |channel_name|
       data = self.load(channel_name)
-      data["messages"].each do |m|
-        m["reactions"].nil? ? next : (users_data << m["reactions"].map {|r| r["users"] })
-      end
+      data["messages"].map {|m| m["reactions"].nil? ? next : (users_data << m["reactions"].map {|r| r["users"] })}
     end
     # users_dataを平坦化
     users_data.flatten!
@@ -27,7 +25,8 @@ class KindUserAggregator
       hash[:reaction_count] = users_data.count(u)
       result << hash
     end
-    result
+    
+    result.max(3){ |a, b| a[:reaction_count] <=> b[:reaction_count] }
   end
 
   def load(channel_name)
