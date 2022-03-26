@@ -9,7 +9,22 @@ class HighMotivationUserAggregator
 
   # 実装してください
   def exec
-    
+    result = []
+
+    @channel_names.each do |channel_name|
+      message_count = 0
+
+      data = self.load(channel_name)
+      data["messages"].each do |m|
+        message_count += 1 if m["type"] == "message"
+      end
+      hash = {}
+      hash[:channel_name] = channel_name
+      hash[:message_count] = message_count
+      result << hash
+    end
+
+    result
   end
 
   def load(channel_name)
