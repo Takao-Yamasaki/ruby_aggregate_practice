@@ -10,21 +10,19 @@ class HighMotivationUserAggregator
   # 実装してください
   def exec
     result = []
-
+h
     @channel_names.each do |channel_name|
       message_count = 0
 
       data = self.load(channel_name)
-      data["messages"].each do |m|
-        message_count += 1 if m["type"] == "message"
-      end
+      data["messages"].map {|m| message_count += 1 if m["type"] == "message" }
       hash = {}
       hash[:channel_name] = channel_name
       hash[:message_count] = message_count
       result << hash
     end
 
-    result
+    result.max(3) { |a, b| a[:message_count] <=> b[:message_count] }
   end
 
   def load(channel_name)
