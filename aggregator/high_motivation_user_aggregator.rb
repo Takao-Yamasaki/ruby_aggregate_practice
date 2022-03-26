@@ -10,7 +10,7 @@ class HighMotivationUserAggregator
   # 実装してください
   def exec
     result = []
-h
+    
     @channel_names.each do |channel_name|
       message_count = 0
 
