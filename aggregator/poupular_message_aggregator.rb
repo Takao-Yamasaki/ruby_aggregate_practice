@@ -14,13 +14,7 @@ class PopularMessageAggregator
       data["messages"].each do |m|
         hash = {}
         hash[:text] =  m["text"]
-        if  m["reactions"].nil?
-          next
-        else
-          m["reactions"].each do |r|
-            hash[:reaction_count] = r["count"]
-          end
-        end
+        m["reactions"].nil? ? next : (hash[:reaction_count] =  m["reactions"].map { |r| r["count"] }.sum)
         result << hash
       end
     end
