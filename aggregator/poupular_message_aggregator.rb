@@ -7,18 +7,9 @@ class PopularMessageAggregator
 
   # 実装してください
   def exec
-    result = []
-
-    @channel_names.each do |channel_name|
-      data = self.load(channel_name)
-      data["messages"].each do |m|
-        hash = {}
-        hash[:text] =  m["text"]
-        m["reactions"].nil? ? next : (hash[:reaction_count] =  m["reactions"].map { |r| r["count"] }.sum)
-        result << hash
-      end
-    end
-    result.max {|a, b| a[:reaction_count] <=> b[:reaction_count] }
+    messages_data = @channel_names.map {|channel_name| self.load(channel_name)["messages"]}.flatten
+    reaction_count_data = messages_data.map { |m| m["reactions"].nil? ? next : { text: m["text"], reaction_count: m["reactions"].map{|r| r["count"]}.sum } }.compact!
+    reaction_count_data.max {|a, b| a[:reaction_count] <=> b[:reaction_count] }
   end
 
   def load(channel_name)
