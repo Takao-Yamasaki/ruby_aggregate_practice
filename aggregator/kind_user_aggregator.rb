@@ -9,24 +9,10 @@ class KindUserAggregator
 
   # 実装してください
   def exec
-    result = []
-    users_data = []
-
-    @channel_names.each do |channel_name|
-      data = self.load(channel_name)
-      data["messages"].map {|m| m["reactions"].nil? ? next : (users_data << m["reactions"].map {|r| r["users"] })}
-    end
-    # users_dataを平坦化
-    users_data.flatten!
-    # uniqで重複した要素を除く
-    users_data.uniq.each do |u|
-      hash = {}
-      hash[:user_id] = u
-      hash[:reaction_count] = users_data.count(u)
-      result << hash
-    end
-    
-    result.max(3){ |a, b| a[:reaction_count] <=> b[:reaction_count] }
+    messages_data = @channel_names.map { |channel_name| self.load(channel_name)["messages"] }.flatten
+    users_data = messages_data.map { |m| m["reactions"] }.compact.flatten.map { |r| r["users"] }.flatten
+    reactions_data = users_data.uniq.map { |u| { user_id: u, reaction_count: users_data.count(u) } }
+    reactions_data.max(3){ |a, b| a[:reaction_count] <=> b[:reaction_count] }
   end
 
   def load(channel_name)
