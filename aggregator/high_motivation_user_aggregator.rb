@@ -15,10 +15,9 @@ class HighMotivationUserAggregator
       message_count = 0
 
       data = self.load(channel_name)
-      data["messages"].map {|m| message_count += 1 if m["type"] == "message" }
       hash = {}
       hash[:channel_name] = channel_name
-      hash[:message_count] = message_count
+      hash[:message_count] = data["messages"].each.count {|m| m["type"] == "message" }
       result << hash
     end
 
