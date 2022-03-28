@@ -9,7 +9,14 @@ class HighMotivationUserAggregator
 
   # 実装してください
   def exec
-    
+    messages_count_data = @channel_names.map do |channel_name|
+      {
+        channel_name: channel_name,
+        message_count: self.load(channel_name)["messages"].each.count {|m| m["type"] == "message"}
+      }
+    end
+
+    messages_count_data.max(3) { |a, b| a[:message_count] <=> b[:message_count] }
   end
 
   def load(channel_name)
